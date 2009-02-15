@@ -1,0 +1,6 @@
+# -*- python -*-
+Import('env')
+
+env.Program(['testMatrix.cc'], LIBS=env.getlibs('boost lapack vw gsl'))
+
+# env.Program(['testMatrixGoto.cc'], LIBS=env.libs['boost'] + ['vw'] + ['goto_prescottp-r1.26'] + ['gsl'])

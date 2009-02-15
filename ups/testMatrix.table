@@ -1,0 +1,4 @@
+setupRequired(eigen)
+setupRequired(boost)
+setupRequired(gsl)
+setupRequired(vw)
