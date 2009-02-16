@@ -1,20 +1,27 @@
 // -*- lsst-c++ -*-
 
+#define TEST_VW 0
+#define TEST_GSL 1
+
 #include <boost/numeric/ublas/io.hpp>
 #include <boost/timer.hpp> 
 #include <boost/numeric/ublas/matrix.hpp>
 
-#include <vw/Core/Exception.h> 
-#include <vw/Math/Matrix.h> 
-#include <vw/Math/Vector.h> 
-#include <vw/Math/LinearAlgebra.h> 
-
+#if TEST_GSL
 #include <gsl/gsl_matrix.h>
 #include <gsl/gsl_vector.h>
 #include <gsl/gsl_machine.h>
 #include <gsl/gsl_blas.h>
 #include <gsl/gsl_multifit.h>
 #include <gsl/gsl_linalg.h>
+#endif
+
+#if TEST_VW
+#include <vw/Core/Exception.h> 
+#include <vw/Math/Matrix.h> 
+#include <vw/Math/Vector.h> 
+#include <vw/Math/LinearAlgebra.h> 
+#endif
 
 #include "Eigen/Cholesky"
 #include "Eigen/Core"
@@ -105,6 +112,7 @@ namespace {
 
         result("Boost::ublas fill", t.elapsed());
     }
+#if TEST_VW
     //
     // VW
     //
@@ -158,6 +166,9 @@ namespace {
         vw::math::Vector<double> vs2  = m1t*v1;
         result("VW least squared 2", t.elapsed(), vs2[0], vs2[N-1]);
     }
+#endif
+
+#if TEST_GSL
     //
     // GSL
     //
@@ -288,6 +299,7 @@ namespace {
         gsl_vector_div (gs2, D);
         result("GSL least squared 2", t.elapsed() ,gsl_vector_get(gs2, 0), gsl_vector_get(gs2, N-1));
     }
+#endif
     //
     // Eigen
     //
@@ -456,10 +468,11 @@ int main(int argc, char** argv) {
 #endif
 
     // vw
+#if TEST_VW
     test_set_vw(t, A, Niter);
+#endif
     
     // GSL
-#define TEST_GSL 1
 #if TEST_GSL
     test_set_gsl(t, A, Niter);
 #endif
@@ -471,7 +484,9 @@ int main(int argc, char** argv) {
      */
     cout << endl;
 
+#if TEST_VW
     test_lsq_vw(t, A, b);
+#endif
 #if TEST_GSL
     test_lsq_gsl(t, A, b);
 #endif

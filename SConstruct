@@ -5,18 +5,33 @@
 import glob, os.path
 import lsst.SConsUtils as scons
 
+dependencies = [
+    ["boost", "boost/numeric/ublas/blas.hpp"],
+    ]
+
+if os.uname()[0] == 'Darwin':           # already has blas
+    dependencies += [
+        ["gsl", "gsl/gsl_version.h", "gsl"],
+        ]
+else:
+    blas = "gslcblas"                   # assuming that we build gsl using gslcblas
+        
+    dependencies += [
+        ["gsl", "gsl/gsl_version.h", blas],
+        ["gsl", "gsl/gsl_version.h", "%s gsl" % blas],
+        ]
+    
+dependencies += [
+    ["lapack", None, "lapack", "dgesdd_"],
+    ["vw", "vw/Core.h", "vwCore:C++"],
+    ["vw", "vw/Core.h", "vw:C++"],
+    ["eigen", "Eigen/Core.h"],
+    ]
+
 env = scons.makeEnv(
     "matrix",
     r"$HeadURL: svn+ssh://svn.lsstcorp.org/DMS/gil/trunk/SConstruct $",
-    [["boost", "boost/numeric/ublas/blas.hpp"],
-     ["gsl", "gsl/gsl_version.h", "gsl"],
-     #["gsl", "gsl/gsl_version.h", "gslcblas"],
-     ["lapack", None, "lapack", "dgesdd_"],
-     #["lapack", None, "BLAS", "ilaenv_"],
-     ["vw", "vw/Core.h", "vwCore:C++"],
-     ["vw", "vw/Core.h", "vw:C++"],
-     ["eigen", "Eigen/Core.h"],
-    ],
+    dependencies
 )
 #
 # Libraries needed to link libraries/executables
